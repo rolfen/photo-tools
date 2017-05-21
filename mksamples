@@ -1,0 +1,35 @@
+
+#current dir
+#input="ls";
+
+#list of files from stdin
+input="cat /dev/stdin";
+
+#output directory
+baseout=$1;
+
+sources=$($input  |grep \.ORF$);
+
+
+for f in $sources; do
+	if [ -s $f ]; then # file non-empty
+		i=$(basename -s .ORF $f);
+		echo $i;
+
+		# This will generate samples from the embedded preview image (it is fast)
+		dcraw -e -c -h  "$f" | tee \
+			>(convert -resize 1000x1000 - $baseout$i.large.jpg) \
+			>(convert -resize 250x250 - $baseout$i.thumb.jpg) \
+		2&>/dev/null ; #we don't need the data in stdout
+		# avoid swamping the OS
+		sleep 0.5;
+
+		# This will generate jpg samples from the raw data
+		#dcraw -c -h  "$f" | tee \
+		#	>(convert -resize 1000x1000 - - | cjpeg -dct fast -quality 80 > $baseout$i.large.jpg) \
+		#	>(convert -resize 250x250 - - | cjpeg -dct fast -quality 75 > $baseout$i.thumb.jpg) \
+		#2&>/dev/null ; #we don't need the data in stdout
+	else
+		echo "skipping $f" >> /dev/stderr;
+	fi
+done;
