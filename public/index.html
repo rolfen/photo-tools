@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+
+"use strict";
+
+// util
+
+function preloadImage(src) {
+	(new Image()).src = src;
+}
+
+function ajaxGet(url, callback) {
+	// get image list
+	var x = new XMLHttpRequest();
+	x.onreadystatechange = function(){
+		var DONE = this.DONE || 4;
+		if(this.readyState === DONE) {
+			// done!
+			if(typeof callback === "function") {
+				callback(this.response);
+			}
+		}
+	}
+    x.open("GET", url , false);
+	x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    x.send(null);
+}
+
+function deleteNextSiblings(el) {
+	var root = el.parentElement;
+	var nextSibling;
+	while(nextSibling = el.nextElementSibling) {
+		root.removeChild(nextSibling);   
+	}
+}
+
+function deletePreviousSiblings(el) {
+	var root = el.parentElement;
+	var prevSibling;
+	while(prevSibling = el.previousElementSibling) {
+		root.removeChild(prevSibling);   
+	}
+}
+
+function dbg(v) {
+	// return(console.debug(v));
+}
+// end util
+
+var galleryRoot;
+var thumbDir = "img/thumb/";
+// N of the first and last items
+var chunkServerUrl = "http://127.0.0.1:3110/chunk/";
+var chunkSize = 5;
+var maxItems = 80;
+var first = 900;
+var triggerOffset = 600; // in pixels
+var last = first + 100;
+
+function galleryAppend(imageIds, prepend) {
+	imageIds.forEach(function(imgId){
+		var item = document.createElement("IMG");
+		item.setAttribute("src", thumbDir + imgId + ".thumb.jpg");
+		if(prepend === true) {
+			galleryRoot.insertBefore(item, galleryRoot.firstChild);
+		} else {
+			galleryRoot.appendChild(item);
+		}
+	})
+}
+
+function galleryPrepend(imageIds) {
+	return galleryAppend(imageIds, true);
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+	galleryRoot = document.querySelector(".gallery");
+	var galleryUpdateInProgress = false;
+	
+	ajaxGet(chunkServerUrl + first + '-' + last, function(response){
+		galleryAppend(JSON.parse(response));
+	});
+
+    ["scroll","resize"].forEach(function(eventName) {
+    	window.addEventListener(eventName ,function(e){
+    		if(!galleryUpdateInProgress) {
+		    	var target = e.target;
+		    	var visibleHeight = document.documentElement.clientHeight;
+		    	var maskedHeight = document.body.scrollTop;
+		    	var totalHeight = document.body.scrollHeight;
+		    	var scrollBottom = totalHeight - maskedHeight - visibleHeight;
+		    	if(scrollBottom < triggerOffset) {
+		    		galleryUpdateInProgress = true;
+					dbg("Append Chunk to " + (last + chunkSize));
+					ajaxGet(
+						chunkServerUrl + last +'-'+ (last+chunkSize),
+						function(response){
+							galleryAppend(JSON.parse(response));
+							last = last + chunkSize;
+							if(galleryRoot.children.length > maxItems) {
+								dbg("Chopped head");
+								deletePreviousSiblings(galleryRoot.children[chunkSize]);
+								first = first + chunkSize;
+							}
+							galleryUpdateInProgress = false;
+						}
+					);
+		    	} else if(maskedHeight < triggerOffset && first > 0) {
+		    		galleryUpdateInProgress = true;
+					dbg("Prepend Chunk from " + (first - chunkSize));
+					ajaxGet(
+						chunkServerUrl + (first - chunkSize) +'-'+ first,
+						function(response){
+							galleryPrepend(JSON.parse(response));
+							first = first - chunkSize;
+							if(galleryRoot.children.length > maxItems) {
+								dbg("Shortened tail");
+								deleteNextSiblings(galleryRoot.children[last - first -chunkSize]);
+								last = last - chunkSize;
+							}
+							galleryUpdateInProgress = false;
+						}
+					);
+		    	}
+    		}
+	    });
+	});
+})
+
+</script>
+<head>
+	<title></title>
+</head>
+<body>
+	<div class="gallery">
+		
+
+	</div>
+</body>
+</html>
