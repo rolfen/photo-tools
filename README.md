@@ -17,8 +17,22 @@ Here are some of the issues addressed:
 
 
 ## De-duplication
-`fdupes` will generate a list of duplicate files.
-`procdupes` will process that list (more to come on that).
+`fdupes` can be used to generate a list of duplicate files. In practice, it has a few issues. On my machine, `fdupes -n` (-n means "skip empty files) skips a whole lot of non-empty files, for some reason. Also, fdupes can only use directories as input. It cannot be fed list of files to look at.
+
+### procdupes.js
+
+That is why I wrote `procdupes.js` - to try to overcome these limitations. `procdupes.pl` expects to read output 'dupephotos.txt' (TODO: make it read the stdin instead). It will then filter that list and (normally) return a list of files to be removed or a list of commands that can be run to remove the files.
+
+Procdupes accepts a command line argument, which is the run mode, as such:
+ - No argument passed: default 'do' mode: prints a list of commands. These commands will move duplicates to a '.Trash' folder in the current directory.
+ - `procdupes.js explain`: Prints a log of each processed file, witht the following prefixes before the filename:
+   - ' KE ': Keep Empty
+   - ' KL ': Keep last
+   - ' KX ': Keep XMP file
+   - ' D ': Delete duplicate 
+   
+   Also, a ' NEW SET ' separator is printed for every new encountered file set.
+ - `procdupes.js list`: Only list all deletion candidates.
 
 ## Creating a contact sheet
 
@@ -40,3 +54,14 @@ It requires package netpbm (or alternatively can be made to work with imagemagic
 ## Reviewing the contact sheet
 
 There is an html-based interface in `./public`. It requires node. You should run index.js (`node ./index.js`) for serving ajax data.
+
+## Additional Resources
+
+Photo workflow and archive management is a topic that has been tackled before, for sure! Here are some interesting further resource.
+There may be different options for deduplication, such as file-system solutions: https://github.com/opendedup/sdfs
+
+Here are some potentially interesting reads on photo workflow:
+ - http://dafacto.com/2013/photo-management-from-aperture-to-a-file-system-and-everpix/
+ - http://rantsandrambles.net/blog/how-i-almost-lost-every-family-photo-i-have
+ 
+ 
