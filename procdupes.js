@@ -16,7 +16,7 @@ var args = [];
 var config = {
 	do : true, // delete files, don't just list them
 	dbg : false, // debug mode
-	inFile : "dupephotos.txt",
+	inFile : " - ", // - (space dash space) means standard input
 	pathPrefix : ""
 }
 
@@ -53,14 +53,29 @@ if(config.do) {
 }
 
 // executive
-fs.readFile(config.inFile,'utf8', function(err, data){
-	if(err) {
-		throw(err);
-	} else {
-		processFdupesList(data);
-		done();
-	}
-});
+
+if(config.inFile = " - ") {
+	// read standard input
+	var data = "";
+	process.stdin.setEncoding('utf8');
+	process.stdin.on('readable', () => {
+		var chunk = process.stdin.read();
+		if (chunk !== null) {
+			data = data + chunk;
+		}
+	});
+	process.stdin.on('end', () => {
+		processData(data);
+	});
+} else {
+	fs.readFile(config.inFile,'utf8', function(err, data){
+		if(err) {
+			throw(err);
+		} else {
+			processData(data);
+		}
+	});
+}
 
 // --------- callback-style functions
 
@@ -124,11 +139,6 @@ function emitDelete(path) {
 	}
 }
 
-function done() {
-	process.stderr.write(JSON.stringify(scriptStats,null,2) + '\n');
-}
-
-// ----------- util
 
 function fileExt(filename) {
     var i = filename.lastIndexOf('.');
@@ -136,6 +146,12 @@ function fileExt(filename) {
 }
 
 // ----------- subs
+
+// main process
+function processData(data) {
+	processFdupesList(data);
+	done();
+}
 
 
 function processFdupesList(list) {
@@ -190,4 +206,9 @@ function processDupeSet(set) {
 		scriptStats.emptySets ++;
 	}
 }
+
+function done() {
+	process.stderr.write(JSON.stringify(scriptStats,null,2) + '\n');
+}
+
 
