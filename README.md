@@ -28,11 +28,14 @@ Procdupes accepts a command line argument, which is the run mode, as such:
  - `procdupes.js explain`: Prints a log of each processed file, witht the following prefixes before the filename:
    - ' KE ': Keep Empty
    - ' KL ': Keep last
+   - ' KF ': Keep first
    - ' KX ': Keep XMP file
    - ' D ': Delete duplicate 
-   
    Also, a ' NEW SET ' separator is printed for every new encountered file set.
  - `procdupes.js list`: Only list all deletion candidates.
+
+### Todo
+Do not delete duplicates with different file names (especially if they're supposedly unique photo IDs).
 
 ## Creating a contact sheet
 
