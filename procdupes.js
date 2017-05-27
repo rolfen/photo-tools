@@ -14,7 +14,8 @@ var args = [];
 
 // default config
 var config = {
-	do : true, // delete files, don't just list them
+	keepLast : true, // set to true to keep last file in set instead of first
+	do : true, // generate commands to delete files, don't just list them
 	dbg : false, // debug mode
 	inFile : " - ", // - (space dash space) means standard input
 	pathPrefix : ""
@@ -106,6 +107,11 @@ function emitKeepLast(path) {
 	}
 }
 
+function emitKeepFirst(path) {
+	if(config.dbg) {
+		process.stdout.write(dbg(" KF ")+ path +  "\n");
+	}
+}
 
 function emitKeepXmp(path) {
 	if(config.dbg) {
@@ -170,9 +176,11 @@ function processDupeSet(set) {
 	if(set.length > 0) {
 		emitNewSet(set);
 		set.forEach(function(givenPath, indexInSet){
-			if(indexInSet == (set.length - 1)) {
+			if(config.keepLast && (indexInSet == (set.length - 1))) {
 				// keep last duplicate
 				emitKeepLast(givenPath);
+			} else if(indexInSet == 0) {
+				emitKeepFirst(givenPath);
 			} else {
 
 				var realPath = config.pathPrefix + givenPath;
