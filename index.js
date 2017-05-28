@@ -3,7 +3,7 @@ var fs = require('fs')
 
 var app = express()
 
-var photoFiles = "/home/rolf/photo/out/thumb/";
+var photoFiles = "./public/img/thumb/";
 var photos = [];
 
 
