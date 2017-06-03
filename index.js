@@ -61,7 +61,7 @@ app.get('/chunk/:from-:to', function (req, res) {
 	var from = parseInt(req.params.from);
 	var to = parseInt(req.params.to);
 	if((from !== NaN) && (to !== NaN)) {
-		res.send(JSON.stringify(photos.map((d)=>d.id).slice(from, to)));
+		res.send(JSON.stringify(photos.map(function(d){return d.id}).slice(from, to)));
 	}
 })
 
