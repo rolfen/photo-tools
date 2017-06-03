@@ -65,6 +65,15 @@ app.get('/chunk/:from-:to', function (req, res) {
 	}
 })
 
+app.get('/id/position/:id', function (req, res) {
+	var id = req.params.id;
+	if(id.length) {
+		res.send(JSON.stringify(photos.indexOf(photos.find(function(d){
+			return d.id == id;
+		}))));
+	}
+})
+
 app.listen(3110, function () {
   console.log('Listening on port 3110!')
 })
