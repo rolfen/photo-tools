@@ -53,9 +53,12 @@
 	var thumbDir = "img/thumb/";
 	var largeDir = "img/large/";
 	// N of the first and last items
+	var serverUrl = "http://127.0.0.1:3110/";
 	var chunkServerUrl = "http://127.0.0.1:3110/chunk/";
+	var idPositionServerUrl = "http://127.0.0.1:3110/id/position/";
 	var chunkSize = 5;
 	var maxItems = 80;
+	var initialItems = 100;
 	var first = 900;
 	var triggerOffset = 600; // in pixels
 
@@ -88,9 +91,19 @@
 		overlayRoot = document.querySelector(".overlay");
 		var galleryUpdateInProgress = false;
 		
-		ajaxGet(chunkServerUrl + first + '-' + (first + 100), function(response){
-			galleryAppend(JSON.parse(response));
-		});
+
+		if(document.location.hash.length > 0) {
+			var key = document.location.hash.substr(1);
+			ajaxGet(idPositionServerUrl + key, function(offset){
+				ajaxGet(chunkServerUrl + offset + '-' + (offset + initialItems), function(response){
+					galleryAppend(JSON.parse(response));
+				});				
+			});
+		} else {
+			ajaxGet(chunkServerUrl + first + '-' + (first + initialItems), function(response){
+				galleryAppend(JSON.parse(response));
+			});	
+		}
 
 	    ["scroll","resize"].forEach(function(eventName) {
 	    	window.addEventListener(eventName ,function(e){
