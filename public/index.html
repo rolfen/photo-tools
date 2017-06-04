@@ -67,6 +67,7 @@
 			var item = document.createElement("IMG");
 			item.setAttribute("src", thumbDir + imgId + ".thumb.jpg");
 			item.addEventListener("click",function(e) {
+				document.location.hash = imgId;
 				setOverlay(largeDir + imgId + ".large.jpg");
 			});
 			if(prepend === true) {
@@ -151,6 +152,7 @@
 		});
 
 		document.querySelector(".overlay").addEventListener("click", function(e){
+			document.location.hash = 'nowhere';
 			e.currentTarget.classList.add("hidden");
 		});
 	})
@@ -181,7 +183,7 @@
 	<title></title>
 </head>
 <body>
-	<div class="overlay">
+	<div class="overlay hidden">
 		<img src="img/large/PC270241.large.jpg" />
 	</div>
 	<div class="gallery">
