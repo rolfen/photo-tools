@@ -21,6 +21,8 @@ Charges can be incurred - see the B2 site for more info.
 
 The SHA1 checksums will be saved in `local/remoteHashes.txt`, with one line per file, containing the checksum, then a space, then the path of the file relative to the bucket root, then a newline (\n).
 
+**Warning**: The contents of `local/remoteHashes.txt` will be deleted every time this script is run!
+
 ```
 6bc5aa1d824b35e4cb09429eee74feccbfbe8c42 myPhotos/Updloads/3340175.ORF
 ```
