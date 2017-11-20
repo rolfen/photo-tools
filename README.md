@@ -10,8 +10,8 @@ It should exist and contain a file named config.js, with the information resembl
 ```
 {
 	"bucketId": "cdf6711c606e3a711367f427",
-    "accountId": "364fd60cfdad",
-    "applicationKey": "000c60fa6031e86d64d6e7faa070f711cf2acb390a"
+	"accountId": "364fd60cfdad",
+	"applicationKey": "000c60fa6031e86d64d6e7faa070f711cf2acb390a"
 }
 ```
 
@@ -19,7 +19,7 @@ When run (`node index.js`), this script will connect to the specified bucket and
 
 Charges can be incurred - see the B2 site for more info.
 
-The SHA1 checksums will be saved in local/remoteHashes.txt, with one line per file, containing the checksum, then a space, then the path of the file relative to the bucket root, then a newline (\n).
+The SHA1 checksums will be saved in `local/remoteHashes.txt`, with one line per file, containing the checksum, then a space, then the path of the file relative to the bucket root, then a newline (\n).
 
 ```
 6bc5aa1d824b35e4cb09429eee74feccbfbe8c42 myPhotos/Updloads/3340175.ORF
