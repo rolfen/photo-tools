@@ -2,6 +2,7 @@
 const B2 = require("backblaze-b2");
 const fs = require("fs");
 
+
 const localDir = 'local/';
 
 // load credentials
@@ -20,7 +21,6 @@ var b2 = new B2({
     "applicationKey": b2Config.applicationKey
 });
 
-// console.log(sha1File("local/P9140797.ORF"));
 
 // takes a B2 listFileNames response and appends it to a file
 function saveListFileNamesResponse(r) {

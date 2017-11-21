@@ -5,6 +5,9 @@
   "main": "index.js",
   "dependencies": {
     "backblaze-b2": "^1.0.2",
+    "minimist": "^1.2.0",
+    "path": "^0.12.7",
+    "recursive-readdir": "^2.2.1",
     "sha1-file": "^1.0.0"
   },
   "devDependencies": {},
