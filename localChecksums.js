@@ -1,3 +1,5 @@
+const path = require('path');
+
 // parse arguments
 const minimist = require("minimist");
 var args = minimist(process.argv.slice(2),{
@@ -10,9 +12,6 @@ var args = minimist(process.argv.slice(2),{
 	}
 });
 
-// normalize trailing slashes
-const path = require('path');
-args.d = args.d.replace(/[\/\\]$/,'') + path.sep;
 
 function processFile(f) {
 	const sha1File = require("sha1-file");
@@ -31,8 +30,12 @@ function recursiveProcessDirectory(path) {
 }
 
 try {
+	// normalize trailing slashes
+	args.d = args.d.replace(/[\/\\]$/,'') + path.sep;
 	recursiveProcessDirectory(args.d);
 } catch(e) {
-	console.log("Usage: " + process.argv[1] + " -d input-directory [-o output-file]");
 	console.dir(e);
+	console.log("----------");
+	console.log("Usage: " + process.argv[1].split(path.sep).pop() + " -d input-directory");
+	// console.log("Usage: " + process.argv[1].split(path.sep).pop() + " -d input-directory [-o output-file]");
 }
