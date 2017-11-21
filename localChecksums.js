@@ -1,6 +1,5 @@
+// parse arguments
 const minimist = require("minimist");
-const path = require('path');
-
 var args = minimist(process.argv.slice(2),{
 	alias: {
 		d: "directory",
@@ -12,6 +11,7 @@ var args = minimist(process.argv.slice(2),{
 });
 
 // normalize trailing slashes
+const path = require('path');
 args.d = args.d.replace(/[\/\\]$/,'') + path.sep;
 
 function processFile(f) {
@@ -27,27 +27,6 @@ function recursiveProcessDirectory(path) {
 			throw new Error(err);
 		}
 		files.forEach(processFile);
-	})
-}
-
-function processDirectory(path) {
-	const fs = require('fs');
-	fs.readdir(path, (err, files) => {
-		if(err) {
-			throw new Error(err);
-		}
-		files.forEach(file => {
-			debugger;
-			fs.stat(path + file, (err, stats) => {
-				if(err) {
-					throw new Error(err);
-				} else {
-					if(!stats.isDirectory()) {
-						processFile(path + file);
-					}			
-				}
-			});
-		});
 	})
 }
 
