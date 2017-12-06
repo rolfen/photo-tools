@@ -1,0 +1,27 @@
+{
+  "name": "backblaze-b2-dedupe",
+  "version": "1.0.0",
+  "description": "Deduplicate files before uploading to Backblaze B2",
+  "main": "index.js",
+  "dependencies": {
+    "backblaze-b2": "^1.0.2",
+    "minimist": "^1.2.0",
+    "path": "^0.12.7",
+    "recursive-readdir": "^2.2.1",
+    "sha1-file": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolfen/backblaze-b2-dedupe.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rolfen/backblaze-b2-dedupe/issues"
+  },
+  "homepage": "https://github.com/rolfen/backblaze-b2-dedupe#readme"
+}
