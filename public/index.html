@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript">
+
+	"use strict";
+
+	// util
+
+	function preloadImage(src) {
+		(new Image()).src = src;
+	}
+
+	function ajaxGet(url, callback) {
+		// get image list
+		var x = new XMLHttpRequest();
+		x.onreadystatechange = function(){
+			var DONE = this.DONE || 4;
+			if(this.readyState === DONE) {
+				// done!
+				if(typeof callback === "function") {
+					callback(this.response);
+				}
+			}
+		}
+	    x.open("GET", url , false);
+		x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	    x.send(null);
+	}
+
+	function deleteNextSiblings(el) {
+		var root = el.parentElement;
+		var nextSibling;
+		while(nextSibling = el.nextElementSibling) {
+			root.removeChild(nextSibling);   
+		}
+	}
+
+	function deletePreviousSiblings(el) {
+		var root = el.parentElement;
+		var prevSibling;
+		while(prevSibling = el.previousElementSibling) {
+			root.removeChild(prevSibling);   
+		}
+	}
+
+	function dbg(v) {
+		return(console.debug(v));
+	}
+	// end util
+
+	var galleryRoot, overlayRoot;
+	var thumbDir = "img/thumb/";
+	var largeDir = "img/large/";
+	// N of the first and last items
+	var serverUrl = "http://127.0.0.1:3110/";
+	var chunkServerUrl = "http://127.0.0.1:3110/chunk/";
+	var idPositionServerUrl = "http://127.0.0.1:3110/id/position/";
+	var chunkSize = 5;
+	var maxItems = 80;
+	var initialItems = 100;
+	var first = 900;
+	var triggerOffset = 600; // in pixels
+
+	function galleryAppend(imageIds, prepend) {
+		imageIds.forEach(function(imgId){
+			var item = document.createElement("IMG");
+			item.setAttribute("src", thumbDir + imgId + ".thumb.jpg");
+			item.addEventListener("click",function(e) {
+				document.location.hash = imgId;
+				setOverlay(largeDir + imgId + ".large.jpg");
+			});
+			if(prepend === true) {
+				galleryRoot.insertBefore(item, galleryRoot.firstChild);
+			} else {
+				galleryRoot.appendChild(item);
+			}
+		})
+	}
+
+	function galleryPrepend(imageIds) {
+		return galleryAppend(imageIds, true);
+	}
+
+	function setOverlay(url) {
+		overlayRoot.children[0].setAttribute("src",url);
+		overlayRoot.classList.remove("hidden");
+	}
+
+	document.addEventListener("DOMContentLoaded",function(){
+		galleryRoot = document.querySelector(".gallery");
+		overlayRoot = document.querySelector(".overlay");
+		var galleryUpdateInProgress = false;
+		
+
+		if(document.location.hash.length > 0) {
+			var key = document.location.hash.substr(1);
+			ajaxGet(idPositionServerUrl + key, function(offset){
+				ajaxGet(chunkServerUrl + offset + '-' + (offset + initialItems), function(response){
+					galleryAppend(JSON.parse(response));
+				});				
+			});
+		} else {
+			ajaxGet(chunkServerUrl + first + '-' + (first + initialItems), function(response){
+				galleryAppend(JSON.parse(response));
+			});	
+		}
+
+	    ["scroll","resize"].forEach(function(eventName) {
+	    	window.addEventListener(eventName ,function(e){
+	    		if(!galleryUpdateInProgress) {
+			    	var target = e.target;
+			    	var visibleHeight = document.documentElement.clientHeight;
+			    	var maskedHeight = document.body.scrollTop;
+			    	var totalHeight = document.body.scrollHeight;
+			    	var scrollBottom = totalHeight - maskedHeight - visibleHeight;
+			    	var last = first + galleryRoot.children.length - 1;
+
+			    	if(scrollBottom < triggerOffset) {
+			    		galleryUpdateInProgress = true;
+						dbg("Append Chunk after " + last);
+						ajaxGet(
+							chunkServerUrl + (last+1) + '-'+ (last+chunkSize+1),
+							function(response){
+								galleryAppend(JSON.parse(response));
+								if(galleryRoot.children.length > maxItems) {
+									dbg("Chopped head");
+									deletePreviousSiblings(galleryRoot.children[chunkSize]);
+									first = first + chunkSize;
+								}
+								galleryUpdateInProgress = false;
+							}
+						);
+			    	} else if(maskedHeight < triggerOffset && first > 0) {
+			    		galleryUpdateInProgress = true;
+						dbg("Prepend Chunk before " + first);
+						ajaxGet(
+							chunkServerUrl + (first - chunkSize) +'-'+ first,
+							function(response){
+								galleryPrepend(JSON.parse(response));
+								first = first - chunkSize;
+								if(galleryRoot.children.length > maxItems) {
+									dbg("Shortened tail");
+									deleteNextSiblings(galleryRoot.children[last - first -chunkSize]);
+								}
+								galleryUpdateInProgress = false;
+							}
+						);
+			    	}
+	    		}
+		    });
+		});
+
+		document.querySelector(".overlay").addEventListener("click", function(e){
+			document.location.hash = 'nowhere';
+			e.currentTarget.classList.add("hidden");
+		});
+	})
+
+	</script>
+	<style type="text/css">
+		.overlay.hidden {
+			visibility: hidden;
+			display: none;
+		}
+		.overlay {
+			position: fixed;
+			top:0;left:0;bottom:0;right:0;
+			background-color: rgba(255,255,255,.6);
+		}
+		.overlay > img {
+			position: absolute;
+			top:0;left:0;bottom:0;right:0;
+			margin:auto;
+			padding: 1em;
+		}
+
+		.gallery {
+			text-align: center;
+		}
+
+	</style>
+	<title></title>
+</head>
+<body>
+	<div class="overlay hidden">
+		<img src="img/large/PC270241.large.jpg" />
+	</div>
+	<div class="gallery">
+		
+
+	</div>
+</body>
+</html>

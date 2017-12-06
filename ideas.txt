@@ -1,0 +1,2 @@
+overlay: fast finger-flick scrolling ( a la motion picture ) and (fast) auto slideshow.
+overlay: left-right arrow key scrolling

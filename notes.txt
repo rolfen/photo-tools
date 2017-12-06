@@ -1,0 +1,15 @@
+dcraw interesting options:
+
+interpolation option
+-h half size (super fast)
+-q 0 fast interpolation
+
+output options
+-6 16 bit
+
+
+This one works and is pretty fast (for converting and resizing ORF in current dir)
+
+for i in $(ls |grep \.ORF$|xargs basename -s .ORF); do dcraw -c -h  "$i.ORF" | convert -resize 50% - - | cjpeg -dct fast -quality 75 > $i.dcr.jpg ;done;
+
+see mksamples script for generating multiple samples at once
