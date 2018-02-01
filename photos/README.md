@@ -41,6 +41,8 @@ Do not delete duplicates with different file names (especially if they're suppos
 
 ### Creating samples
 
+#### On Linux
+
 mksample is a Linux bash script (tested on Ubuntu / Debian)
 This is how you can use mksamples:
 ```
@@ -53,6 +55,21 @@ mksamples will try to open every raw file in the given list, generate "samples" 
 It is tested with ORF files. It should work for other formats with minor alteration.
 
 It requires package netpbm (or alternatively can be made to work with imagemagick) and dcraw.
+
+#### On OSX
+
+`sips` can help (comes with the OS)
+
+Assuming that your original ORF files are located in the EPM2 subdirectory of the current directory.
+
+```
+mkdir -p Converted/EPM2
+for i in EPM2/*.ORF; do sips -s format jpeg $i --out Converted/$i.jpeg --resampleWidth 400 ;done
+```
+
+I'm not sure the above is recursive.
+
+Alternatively, it may be possible to use the mksamples linux script, with a little help from `brew` maybe.
 
 ## Reviewing the contact sheet
 
