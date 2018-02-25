@@ -1,0 +1,43 @@
+The immediate goal is to upload my photos to B2, but not upload the ones that already are there.
+
+I would like it to be testable.
+
+Cross platform is good, therefore node.
+
+__Flow:
+
+Checksums and filepaths are kept inside a file in remote root (known as "remote checksums")
+
+Uploading file:
+Load remote checksums, calculate checksum of uploading file. Search for it in remote checksums. If found, then fail, otherwise upload file and add entry in remote checksums.
+
+Delete file:
+Delete file on remote and delete entry in remote checksums.
+
+Uploading tree:
+recurse into directories, create on remote as necessary, upload files following procedure above.
+
+Creating checksums
+
+Syncing checksums:
+Can be partial
+
+__Interfaces:
+
+I would like some interfaces/abstractions so that 1. It is unit-testable 2. It can be adapted to run on different storage platforms.
+
+class Remote {
+	method uploadFile(localFile, path)
+	method saveFile(text, path)
+	
+}
+
+class Checksums {
+	method exists(checksum)
+	method delete(checksum)
+	method append(checksum, path)
+}
+
+__User interface:
+
+Input and output are a bunch of commands or text strings so I think command line. Details to come.
